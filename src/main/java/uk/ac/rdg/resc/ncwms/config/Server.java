@@ -1,155 +1,125 @@
-/*
- * Copyright (c) 2007 The University of Reading
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- * 3. Neither the name of the University of Reading, nor the names of the
- *    authors or contributors may be used to endorse or promote products
- *    derived from this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
- * IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
- * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
- * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
-
 package uk.ac.rdg.resc.ncwms.config;
 
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Root;
 
-/**
- * The part of the configuration file that pertains to the server itself.
- *
- * @author Jon Blower
- * $Revision$
- * $Date$
- * $Log$
- */
-@Root(name="server")
-public class Server
-{
-    @Element(name="title")
-    private String title = "My ncWMS server"; // Title for this ncWMS
-    @Element(name="allowFeatureInfo", required=false)
-    private boolean allowFeatureInfo = true; // True if we allow the GetFeatureInfo operation globally
-    @Element(name="maxImageWidth", required=false)
-    private int maxImageWidth = 1024;
-    @Element(name="maxImageHeight", required=false)
-    private int maxImageHeight = 1024;
-    @Element(name="abstract", required=false)
-    private String abstr = " "; // "abstract" is a reserved word
-    @Element(name="keywords", required=false)
-    private String keywords = " "; // Comma-separated list of keywords
-    @Element(name="url", required=false)
-    private String url = " ";
-    @Element(name="adminpassword")
-    private String adminPassword = "ncWMS";
-    @Element(name="allowglobalcapabilities", required=false)
-    private boolean allowGlobalCapabilities = true;
-    
-    public String getTitle()
-    {
-        return title;
-    }
+@Root(
+   name = "server"
+)
+public class Server {
+   @Element(
+      name = "title"
+   )
+   private String title = "My ncWMS server";
+   @Element(
+      name = "allowFeatureInfo",
+      required = false
+   )
+   private boolean allowFeatureInfo = true;
+   @Element(
+      name = "maxImageWidth",
+      required = false
+   )
+   private int maxImageWidth = 1024;
+   @Element(
+      name = "maxImageHeight",
+      required = false
+   )
+   private int maxImageHeight = 1024;
+   @Element(
+      name = "abstract",
+      required = false
+   )
+   private String abstr = " ";
+   @Element(
+      name = "keywords",
+      required = false
+   )
+   private String keywords = " ";
+   @Element(
+      name = "url",
+      required = false
+   )
+   private String url = " ";
+   @Element(
+      name = "adminpassword"
+   )
+   private String adminPassword = "ncWMS";
+   @Element(
+      name = "allowglobalcapabilities",
+      required = false
+   )
+   private boolean allowGlobalCapabilities = true;
 
-    public void setTitle(String title)
-    {
-        this.title = Config.checkEmpty(title);
-    }
+   public String getTitle() {
+      return this.title;
+   }
 
-    public boolean isAllowFeatureInfo()
-    {
-        return allowFeatureInfo;
-    }
+   public void setTitle(String title) {
+      this.title = Config.checkEmpty(title);
+   }
 
-    public void setAllowFeatureInfo(boolean allowFeatureInfo)
-    {
-        this.allowFeatureInfo = allowFeatureInfo;
-    }
+   public boolean isAllowFeatureInfo() {
+      return this.allowFeatureInfo;
+   }
 
-    public boolean isAllowGlobalCapabilities() {
-        return allowGlobalCapabilities;
-    }
+   public void setAllowFeatureInfo(boolean allowFeatureInfo) {
+      this.allowFeatureInfo = allowFeatureInfo;
+   }
 
-    public void setAllowGlobalCapabilities(boolean allowGlobalCapabilities) {
-        this.allowGlobalCapabilities = allowGlobalCapabilities;
-    }
+   public boolean isAllowGlobalCapabilities() {
+      return this.allowGlobalCapabilities;
+   }
 
-    public int getMaxImageWidth()
-    {
-        return maxImageWidth;
-    }
+   public void setAllowGlobalCapabilities(boolean allowGlobalCapabilities) {
+      this.allowGlobalCapabilities = allowGlobalCapabilities;
+   }
 
-    public void setMaxImageWidth(int maxImageWidth)
-    {
-        this.maxImageWidth = maxImageWidth;
-    }
+   public int getMaxImageWidth() {
+      return this.maxImageWidth;
+   }
 
-    public int getMaxImageHeight()
-    {
-        return maxImageHeight;
-    }
+   public void setMaxImageWidth(int maxImageWidth) {
+      this.maxImageWidth = maxImageWidth;
+   }
 
-    public void setMaxImageHeight(int maxImageHeight)
-    {
-        this.maxImageHeight = maxImageHeight;
-    }
+   public int getMaxImageHeight() {
+      return this.maxImageHeight;
+   }
 
-    public String getServerAbstract()
-    {
-        return abstr;
-    }
+   public void setMaxImageHeight(int maxImageHeight) {
+      this.maxImageHeight = maxImageHeight;
+   }
 
-    public void setServerAbstract(String abstr)
-    {
-        this.abstr = Config.checkEmpty(abstr);
-    }
-    
-    /**
-     * @return the keywords as a comma-separated string
-     */
-    public String getKeywords()
-    {
-        return this.keywords;
-    }
+   public String getServerAbstract() {
+      return this.abstr;
+   }
 
-    public void setKeywords(String keywords)
-    {
-        this.keywords = Config.checkEmpty(keywords);
-    }
+   public void setServerAbstract(String abstr) {
+      this.abstr = Config.checkEmpty(abstr);
+   }
 
-    public String getUrl()
-    {
-        return url;
-    }
+   public String getKeywords() {
+      return this.keywords;
+   }
 
-    public void setUrl(String url)
-    {
-        this.url = Config.checkEmpty(url);
-    }
+   public void setKeywords(String keywords) {
+      this.keywords = Config.checkEmpty(keywords);
+   }
 
-    public String getAdminPassword()
-    {
-        return adminPassword;
-    }
+   public String getUrl() {
+      return this.url;
+   }
 
-    public void setAdminPassword(String adminPassword)
-    {
-        this.adminPassword = adminPassword;
-    }
-    
+   public void setUrl(String url) {
+      this.url = Config.checkEmpty(url);
+   }
+
+   public String getAdminPassword() {
+      return this.adminPassword;
+   }
+
+   public void setAdminPassword(String adminPassword) {
+      this.adminPassword = adminPassword;
+   }
 }
