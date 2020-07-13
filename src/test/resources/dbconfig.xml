@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<config>
+    <contact>
+        <name>Guy</name>
+        <organization>ReSC</organization>
+        <telephone>5217</telephone>
+        <email>g.g</email>
+    </contact>
+    <server>
+        <title>servername</title>
+        <allowFeatureInfo>true</allowFeatureInfo>
+        <maxImageWidth>100</maxImageWidth>
+        <maxImageHeight>50</maxImageHeight>
+        /*
+        <abstract>a fake server</abstract>
+        <keywords>fake, con, front</keywords>"
+        */
+        <url>http://google.com</url>
+        <adminpassword>ncWMS</adminpassword>
+        <allowglobalcapabilities>true</allowglobalcapabilities>
+    </server>
+    <indexDatabase>
+        <name>marvellous</name>
+    </indexDatabase>
+</config>

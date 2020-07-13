@@ -11,9 +11,8 @@ import uk.ac.rdg.resc.edal.catalogue.jaxb.VariableConfig;
 import uk.ac.rdg.resc.edal.util.Extents;
 
 import javax.xml.bind.JAXBException;
-import java.io.FileNotFoundException;
-import java.io.StringReader;
-import java.io.StringWriter;
+import java.io.*;
+import java.net.URL;
 import java.util.Arrays;
 
 public class NcwmsDbConfigTest {
@@ -84,10 +83,14 @@ public class NcwmsDbConfigTest {
         System.out.println(serialise);
     }
 
+    // TODO: Remove?
     @Test
     public void testDeserialise() throws JAXBException, SAXException, FileNotFoundException {
         NcwmsDbConfig config = NcwmsDbConfig.deserialise(new StringReader(XML));
-        System.out.println(config);
+//        System.out.println(config);
+        assertEquals(config.getContactInfo().getName(), "Guy");
+        assertEquals(config.getServerInfo().getName(), "servername");
+        assertEquals(config.getIndexDatabase().getName(), "marvellous");
     }
 
     private final static String XML =
@@ -117,4 +120,14 @@ public class NcwmsDbConfigTest {
                 "</indexDatabase>" +
             "</config>";
 
+    @Test
+    public void testReadFromFile() throws JAXBException, IOException {
+        URL url = this.getClass().getResource("/dbconfig.xml");
+        File file = new File(url.getFile());
+        NcwmsDbConfig config = NcwmsDbConfig.readFromFile(file);
+//        System.out.println(config);
+        assertEquals(config.getContactInfo().getName(), "Guy");
+        assertEquals(config.getServerInfo().getName(), "servername");
+        assertEquals(config.getIndexDatabase().getName(), "marvellous");
+    }
 }

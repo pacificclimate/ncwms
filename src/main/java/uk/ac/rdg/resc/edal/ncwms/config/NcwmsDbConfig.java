@@ -12,6 +12,7 @@ import javax.xml.bind.annotation.XmlType;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 
@@ -77,4 +78,32 @@ public class NcwmsDbConfig extends NcwmsConfig {
         return config;
     }
 
+    public static NcwmsDbConfig readFromFile(File configFile) throws JAXBException, IOException {
+        NcwmsDbConfig config;
+        if (!configFile.exists()) {
+            /*
+             * If the file doesn't exist, create it with some default values
+             */
+            log.warn("No config file exists in the given location (" + configFile.getAbsolutePath()
+                    + ").  Creating one with defaults");
+            config = new NcwmsDbConfig(
+                    new DatasetConfig[0],
+                    new NcwmsDynamicService[0],
+                    new NcwmsContact(),
+                    new NcwmsServerInfo(),
+                    new CacheInfo(),
+                    new NcwmsSupportedCrsCodes(),
+                    new NcwmsIndexDatabase()
+            );
+            config.configFile = configFile;
+            config.save();
+        } else {
+            /*
+             * Otherwise read the file
+             */
+            config = deserialise(new FileReader(configFile));
+            config.configFile = configFile;
+        }
+        return config;
+    }
 }
