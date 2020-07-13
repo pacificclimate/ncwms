@@ -80,7 +80,7 @@ public class NcwmsConfig extends CatalogueConfig {
      * Used for JAX-B
      */
     @SuppressWarnings("unused")
-    private NcwmsConfig() {
+    protected NcwmsConfig() {
     }
 
     public NcwmsConfig(File configFile) throws IOException, JAXBException {
