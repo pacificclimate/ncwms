@@ -16,8 +16,11 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 
+import org.json.JSONObject;
+
 import uk.ac.rdg.resc.edal.catalogue.jaxb.CacheInfo;
 import uk.ac.rdg.resc.edal.catalogue.jaxb.DatasetConfig;
+import uk.ac.rdg.resc.edal.catalogue.jaxb.VariableConfig;
 
 /**
  * Deals purely with the (de)serialisation of the ncWMS config file. This
@@ -105,5 +108,31 @@ public class NcwmsDbConfig extends NcwmsConfig {
             config.configFile = configFile;
         }
         return config;
+    }
+
+    /**
+     * Load datasets from index database. The config read from XML contains an
+     * <indexDatabase> section that specifies how to get data from the database.
+     * But reading in the XML doesn't actually do anything with this information.
+     * This method does.
+     *
+     * It's not clear that this shouldn't be part of {@link #readFromFile}.
+     */
+    public void loadFromIndexDatabase() {
+        // Set up a dummy DatasetStorage to handle loaded datasets.
+        // Christ only knows what we should actually be doing here.
+        setDatasetLoadedHandler(new DummyDatasetStorage());
+
+        // Let's start fake: Get the new "datasets" from a bogus element
+        // <result> in the <indexDataset> element. We'll decode it from JSON!
+        // And we'll just specify a few parameters with it.
+        JSONObject datasetParams = new JSONObject(getIndexDatabase().getResult());
+        String id = datasetParams.getString("id");
+        String location = datasetParams.getString("location");
+        VariableConfig[] variables = new VariableConfig[]{};
+        DatasetFullConfig dataset = new DatasetFullConfig(
+                id, id, location, true, false, "", "", "", false, -1, null, null, null, variables
+        );
+        addDataset(dataset);
     }
 }

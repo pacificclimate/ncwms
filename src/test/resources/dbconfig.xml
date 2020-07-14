@@ -11,15 +11,14 @@
         <allowFeatureInfo>true</allowFeatureInfo>
         <maxImageWidth>100</maxImageWidth>
         <maxImageHeight>50</maxImageHeight>
-        /*
-        <abstract>a fake server</abstract>
-        <keywords>fake, con, front</keywords>"
-        */
         <url>http://google.com</url>
         <adminpassword>ncWMS</adminpassword>
         <allowglobalcapabilities>true</allowglobalcapabilities>
     </server>
     <indexDatabase>
         <name>marvellous</name>
+        <result>
+            { id: "id", location: "location" }
+        </result>
     </indexDatabase>
 </config>

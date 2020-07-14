@@ -11,18 +11,25 @@ public class NcwmsIndexDatabase implements IndexDatabaseInfo {
     @XmlElement(name = "name")
     private String name = "";
 
+    @XmlElement(name = "result")
+    private String result = "";
+
     NcwmsIndexDatabase() {
     }
 
-    public NcwmsIndexDatabase(String name) {
+    public NcwmsIndexDatabase(String name, String result) {
         super();
         this.name = name;
+        this.result = result;
     }
 
     @Override
     public String getName() {
         return name;
     }
+
+    @Override
+    public String getResult() { return result; }
 
     @Override
     public String toString() {
