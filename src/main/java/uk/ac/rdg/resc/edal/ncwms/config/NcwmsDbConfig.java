@@ -22,6 +22,8 @@ import uk.ac.rdg.resc.edal.catalogue.jaxb.CacheInfo;
 import uk.ac.rdg.resc.edal.catalogue.jaxb.DatasetConfig;
 import uk.ac.rdg.resc.edal.catalogue.jaxb.VariableConfig;
 
+import static uk.ac.rdg.resc.edal.ncwms.config.DatasetConfigFactory.makeDatasetConfig;
+
 /**
  * Deals purely with the (de)serialisation of the ncWMS config file. This
  * extends {@link NcwmsConfig} to add index database interfacing.
@@ -130,7 +132,7 @@ public class NcwmsDbConfig extends NcwmsConfig {
         String id = datasetParams.getString("id");
         String location = datasetParams.getString("location");
         VariableConfig[] variables = new VariableConfig[]{};
-        DatasetFullConfig dataset = new DatasetFullConfig(
+        DatasetConfig dataset = makeDatasetConfig(
                 id, id, location, true, false, "", "", "", false, -1, null, null, null, variables
         );
         addDataset(dataset);

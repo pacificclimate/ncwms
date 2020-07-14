@@ -5,11 +5,13 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static uk.ac.rdg.resc.edal.ncwms.config.DatasetConfigFactory.makeDatasetConfig;
 
+import uk.ac.rdg.resc.edal.catalogue.jaxb.DatasetConfig;
 import uk.ac.rdg.resc.edal.catalogue.jaxb.VariableConfig;
 import uk.ac.rdg.resc.edal.util.Extents;
 
-public class DatasetFullConfigTest {
+public class DatasetConfigFactoryTest {
     private String id = "id";
     private String title = "title";
     private String location = "location";
@@ -31,11 +33,11 @@ public class DatasetFullConfigTest {
             )
     };
 
-    private DatasetFullConfig dataset;
+    private DatasetConfig dataset;
 
     @Before
     public void setUp() throws Exception {
-        dataset = new DatasetFullConfig(
+        dataset = makeDatasetConfig(
                 id,
                 title,
                 location,
