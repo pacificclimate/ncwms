@@ -14,13 +14,28 @@ public class NcwmsIndexDatabase implements IndexDatabaseInfo {
     @XmlElement(name = "result")
     private String result = "";
 
+    @XmlElement(name = "url")
+    private String url = "";
+
+    @XmlElement(name = "datasetsQuery")
+    private String datasetsQuery = "";
+
+    @XmlElement(name = "variablesQuery")
+    private String variablesQuery = "";
+
     NcwmsIndexDatabase() {
     }
 
-    public NcwmsIndexDatabase(String name, String result) {
+    public NcwmsIndexDatabase(
+            String name, String result,
+            String url, String datasetsQuery, String variablesQuery
+    ) {
         super();
         this.name = name;
         this.result = result;
+        this.url = url;
+        this.datasetsQuery = datasetsQuery;
+        this.variablesQuery = variablesQuery;
     }
 
     @Override
@@ -32,10 +47,18 @@ public class NcwmsIndexDatabase implements IndexDatabaseInfo {
     public String getResult() { return result; }
 
     @Override
+    public String getUrl() { return url; }
+
+    @Override
+    public String getDatasetsQuery() { return datasetsQuery; }
+
+    @Override
+    public String getVariablesQuery() { return variablesQuery; }
+
+    @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("Name: ");
-        sb.append(name);
-        return sb.toString();
+        String s = "";
+        s += "Name: " + name;
+        return s;
     }
 }
