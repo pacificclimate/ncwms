@@ -32,9 +32,11 @@ public class ResultsSetRunGrouperTest {
     private static ResultSet xs0 = null;
     private static ResultSet xs1 = null;
     private static ResultSet xs2 = null;
+    private static ResultSet xs3 = null;
     private static ResultSet ys0 = null;
     private static ResultSet ys1 = null;
     private static ResultSet ys2 = null;
+    private static ResultSet ys3 = null;
 
     static {
         try {
@@ -55,6 +57,12 @@ public class ResultsSetRunGrouperTest {
                     {"alpha"},
                     {"beta"},
                     {"gamma"}
+                }
+            );
+            xs3 = MockResultSet.create(
+                new String[]{"id"},
+                new Object[][]{
+                    {"beta"}
                 }
             );
 
@@ -78,6 +86,13 @@ public class ResultsSetRunGrouperTest {
                         {"gamma", 4},
                         {"gamma", 5},
                         {"gamma", 6}
+                }
+            );
+            ys3 = MockResultSet.create(
+                new String[]{"id", "value"},
+                new Object[][]{
+                    {"beta", 1},
+                    {"beta", 2},
                 }
             );
 
@@ -134,11 +149,27 @@ public class ResultsSetRunGrouperTest {
             )))
     ));
 
+    private static ArrayList<A> as_2_3 = new ArrayList<>(Arrays.asList(
+        new A("alpha", new ArrayList<>()),
+        new A("beta", new ArrayList<>(Arrays.asList(
+            new B(1),
+            new B(2)
+        ))),
+        new A("gamma", new ArrayList<>())
+    ));
+
+    private static ArrayList<A> as_3_2 = new ArrayList<>(Arrays.asList(
+        new A("beta", new ArrayList<>(Arrays.asList(
+            new B(3)
+        )))
+    ));
+
     // Specify test parameters
     @Parameterized.Parameters
     public static Collection<Object[]> input() throws SQLException {
         return Arrays.asList(
             new Object[][] {
+                // Edge cases
                 {xs0, ys0, as_0_0},
                 {xs0, ys1, as_0_1},
                 {xs0, ys2, as_0_2},
@@ -147,7 +178,15 @@ public class ResultsSetRunGrouperTest {
                 {xs1, ys2, as_1_2},
                 {xs2, ys0, as_2_0},
                 {xs2, ys1, as_2_1},
+
+                // Simple full case
                 {xs2, ys2, as_2_2},
+
+                // More x's than y's, both ends
+                {xs2, ys3, as_2_3},
+
+                // More y's than x's, both ends
+                {xs3, ys2, as_3_2},
             }
         );
     }
