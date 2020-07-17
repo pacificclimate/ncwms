@@ -23,6 +23,9 @@ public class NcwmsIndexDatabase implements IndexDatabaseInfo {
     @XmlElement(name = "variablesQuery")
     private String variablesQuery = "";
 
+    @XmlElement(name = "datasetIdColumnName")
+    private String datasetIdColumnName = "";
+
     NcwmsIndexDatabase() {
     }
 
@@ -54,6 +57,9 @@ public class NcwmsIndexDatabase implements IndexDatabaseInfo {
 
     @Override
     public String getVariablesQuery() { return variablesQuery; }
+
+    @Override
+    public String getDatasetIdColumnName() { return datasetIdColumnName; }
 
     @Override
     public String toString() {
