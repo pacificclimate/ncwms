@@ -11,6 +11,7 @@
         <winstone.version>0.9.10</winstone.version>
         <edal.version>1.4.2</edal.version>
         <resc.url>http://www.met.reading.ac.uk/resc/home/</resc.url>
+        <powermock.version>1.7.3</powermock.version>
     </properties>
 
     <packaging>war</packaging>
@@ -121,6 +122,24 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.5</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.powermock</groupId>
+            <artifactId>powermock-module-junit4</artifactId>
+            <version>${powermock.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.powermock</groupId>
+            <artifactId>powermock-api-mockito</artifactId>
+            <version>${powermock.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.github.stefanbirkner</groupId>
+            <artifactId>system-rules</artifactId>
+            <version>1.19.0</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
