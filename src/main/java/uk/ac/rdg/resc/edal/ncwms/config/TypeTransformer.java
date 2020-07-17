@@ -4,6 +4,11 @@ import java.sql.SQLException;
 
 /**
  * Generic class for transformation of one type of object to another.
+ * TODO: Should @param <W> be removed and replaced by a generic Object
+ *  type in the two-argument `make`? Or Object[], even, to allow for an
+ *  arbitrary number of auxiliary `with` arguments? Can Java spread an
+ *  array as args to a method call? Apparently not :( Another goddamn
+ *  reason we can't have nice things.
  *
  * @param <F> Type of "transform-from" object.
  * @param <T> Type of "transform-to" object.
