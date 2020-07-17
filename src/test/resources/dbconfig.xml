@@ -20,5 +20,9 @@
         <result>
             { id: "id", location: "location" }
         </result>
+        <url>postgresql://test</url>
+        <datasetsQuery>SELECT datasets</datasetsQuery>
+        <variablesQuery>SELECT variables</variablesQuery>
+        <datasetIdColumnName>dataset_id</datasetIdColumnName>
     </indexDatabase>
 </config>

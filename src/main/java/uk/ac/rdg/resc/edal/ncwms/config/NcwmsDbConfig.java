@@ -113,39 +113,33 @@ public class NcwmsDbConfig extends NcwmsConfig {
     /**
      * Load datasets from index database. The config read from XML contains an
      * <indexDatabase> section that specifies how to get data from the database.
-     * But reading in the XML doesn't actually do anything with this information.
+     * Just reading in the XML doesn't actually do anything with this information.
      * This method does.
+     * 
+     * Loading datasets is done by issuing two queries via jdbc:
+     * 
+     * 1. The datasets query (tag <datasetsQuery>). This query must return 
+     *    one row per dataset. Each row must have columns named
+     *    - `dataset_id`
+     *    - `location`
+     *    The results must be sorted in ascending order of `dataset_id`.
+     *    
+     * 2. The variables query (tag <variablesQuery>). This query must return
+     *    one row per variable. Each row must have columns named
+     *    - `dataset_id`
+     *    - `variable_id`
+     *    - `variable_name`
+     *    - `range_min`
+     *    - `range_max`
+     *    The results must be sorted in ascending order of `dataset_id`.
      *
-     * It's not clear that this shouldn't be part of {@link #readFromFile}.
      */
     public void loadFromIndexDatabase() throws SQLException {
         // Set up a dummy DatasetStorage to handle loaded datasets.
         // Christ only knows what we should actually be doing here.
         setDatasetLoadedHandler(new DummyDatasetStorage());
 
-        // Let's start fake: Get the new "datasets" from a bogus element
-        // <result> in the <indexDataset> element. We'll decode it from JSON!
-        // And we'll just specify a few parameters with it.
-//        JSONObject datasetParams = new JSONObject(getIndexDatabase().getResult());
-//        String id = datasetParams.getString("id");
-//        String location = datasetParams.getString("location");
-//        VariableConfig[] variables = new VariableConfig[]{};
-//        DatasetConfig dataset = makeDatasetConfig(
-//                id, id, location, true, false, "", "", "", false, -1, null, null, null, variables
-//        );
-//        addDataset(dataset);
-
-        // Now we're going to get seriouser.
-        //
-        // We will need to do the following things:
-        // - Establish a connection to the database.
-        // - Issue at least one query that returns a list of information
-        //   defining the "datasets" in the database.
-        // - Convert each element of the list of dataset information to a
-        //   DatasetConfig.
-        // - Add each DatasetConfig to this object.
-
-        // Establish connection to database
+        // Establish connection to index database
         Properties connectionProperties = new Properties();
         connectionProperties.setProperty("password", System.getenv("INDEX_DATABASE_PASSWORD"));
         NcwmsIndexDatabase indexDatabase = getIndexDatabase();
@@ -154,31 +148,13 @@ public class NcwmsDbConfig extends NcwmsConfig {
                         "jdbc:" + indexDatabase.getUrl(),
                         connectionProperties
                 )
-        )
-        {
+        ) {
+            // Issue database queries
             Statement statement = connection.createStatement();
-
-            // Get the results of a query that defines datasets.
-            // The SQL for this query is defined externally in the config file in the tag
-            // <datasetsQuery>. This query must return one row per dataset.
-            // Each row must have columns named
-            // - `dataset_id`
-            // - `location`
-            // The results must be sorted in ascending order of `dataset_id`.
             ResultSet datasetRs = statement.executeQuery(indexDatabase.getDatasetsQuery());
-
-            // Get the results of a query that defines variables.
-            // The SQL for this query is defined externally in the config file in the tag
-            // <variablesQuery>. This query must return one row per variable.
-            // Each row must have columns named
-            // - `dataset_id`
-            // - `variable_id`
-            // - `variable_name`
-            // - `range_min`
-            // - `range_max`
-            // The results must be sorted in ascending order of `dataset_id`.
             ResultSet variableRs = statement.executeQuery(indexDatabase.getVariablesQuery());
 
+            // Construct configurations from query results
             ResultSetToDatasetConfig datasetConfigMaker = new ResultSetToDatasetConfig();
             ResultSetToVariableConfig variableConfigMaker = new ResultSetToVariableConfig();
             ResultSetRunGrouper<DatasetConfig, VariableConfig> grouper =
@@ -187,8 +163,9 @@ public class NcwmsDbConfig extends NcwmsConfig {
                     datasetConfigMaker,
                     variableConfigMaker
                 );
-
             ArrayList<DatasetConfig> datasets = grouper.group(datasetRs, variableRs);
+
+            // Add resulting dataset configurations to the ncwms config
             for (DatasetConfig dataset: datasets) {
                 addDataset(dataset);
             }
