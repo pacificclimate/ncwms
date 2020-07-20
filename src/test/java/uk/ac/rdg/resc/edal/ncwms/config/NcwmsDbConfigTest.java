@@ -13,6 +13,7 @@ import uk.ac.rdg.resc.edal.util.Extents;
 import javax.xml.bind.JAXBException;
 import java.io.*;
 import java.net.URL;
+import java.sql.SQLException;
 import java.util.Arrays;
 
 public class NcwmsDbConfigTest {
@@ -46,7 +47,7 @@ public class NcwmsDbConfigTest {
         String[] codes = {"CRS:187", "EPSG:187"};
         NcwmsSupportedCrsCodes crsCodes = new NcwmsSupportedCrsCodes(codes);
 
-        NcwmsIndexDatabase indexDatabase = new NcwmsIndexDatabase("modelmeta", "result");
+        NcwmsIndexDatabase indexDatabase = new NcwmsIndexDatabase("modelmeta", "result", "", "", "");
 
         config = new NcwmsDbConfig(
                 datasets,
@@ -129,18 +130,5 @@ public class NcwmsDbConfigTest {
         assertEquals(config.getContactInfo().getName(), "Guy");
         assertEquals(config.getServerInfo().getName(), "servername");
         assertEquals(config.getIndexDatabase().getName(), "marvellous");
-    }
-
-    @Test
-    public void testLoadFromIndexDatabase()  throws JAXBException, IOException {
-        URL url = this.getClass().getResource("/dbconfig.xml");
-        File file = new File(url.getFile());
-        NcwmsDbConfig config = NcwmsDbConfig.readFromFile(file);
-        config.loadFromIndexDatabase();
-        DatasetConfig[] datasets = config.getDatasets();
-        assertEquals(datasets.length, 1);
-        DatasetConfig dataset = datasets[0];
-        assertEquals(dataset.getId(), "id");
-        assertEquals(dataset.getLocation(), "location");
     }
 }
