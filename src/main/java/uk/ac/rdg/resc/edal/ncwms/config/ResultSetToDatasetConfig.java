@@ -11,6 +11,9 @@ import java.util.ArrayList;
 import static uk.ac.rdg.resc.edal.ncwms.config.DatasetConfigFactory.makeDatasetConfig;
 
 public class ResultSetToDatasetConfig implements TypeTransformer<ResultSet, DatasetConfig, ArrayList<VariableConfig>> {
+    public static final String DATASET_ID_COLUMN_NAME = "dataset_id";
+    public static final String LOCATION_COLUMN_NAME = "location";
+
     // Fixed values for making a DatasetConfig
     private boolean queryable = true;
     private boolean downloadable = false;
@@ -57,8 +60,8 @@ public class ResultSetToDatasetConfig implements TypeTransformer<ResultSet, Data
 
     @Override
     public DatasetConfig make(ResultSet from, ArrayList<VariableConfig> variables) throws SQLException {
-        String id = from.getString("dataset_id");
-        String location = from.getString("location");
+        String id = from.getString(DATASET_ID_COLUMN_NAME);
+        String location = from.getString(LOCATION_COLUMN_NAME);
         // This is why we can't have nice things.
         VariableConfig[] variableConfigs = variables.toArray(
                 new VariableConfig[variables.size()]

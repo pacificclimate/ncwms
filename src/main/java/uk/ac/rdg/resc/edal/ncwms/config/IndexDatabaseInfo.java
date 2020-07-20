@@ -6,5 +6,4 @@ public interface IndexDatabaseInfo {
     String getUrl();
     String getDatasetsQuery();
     String getVariablesQuery();
-    String getDatasetIdColumnName();
 }

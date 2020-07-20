@@ -10,6 +10,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class ResultSetToVariableConfig implements TypeTransformer<ResultSet, VariableConfig, Object> {
+    public static final String VARIABLE_ID_COLUMN_NAME = "variable_id";
+    public static final String VARIABLE_NAME_COLUMN_NAME = "variable_name";
+    public static final String RANGE_MIN_COLUMN_NAME = "range_min";
+    public static final String RANGE_MAX_COLUMN_NAME = "range_max";
+
     // Fixed values for making a VariableConfig
     private String paletteName = "x-Occam";
     private Color belowMinColour = new Color(1, 0, 0);
@@ -39,10 +44,10 @@ public class ResultSetToVariableConfig implements TypeTransformer<ResultSet, Var
 
     @Override
     public VariableConfig make(ResultSet from) throws SQLException {
-        String variable_id = from.getString("variable_id");
-        String variable_name = from.getString("variable_name");
-        Float range_min = from.getFloat("range_min");
-        Float range_max = from.getFloat("range_max");
+        String variable_id = from.getString(VARIABLE_ID_COLUMN_NAME);
+        String variable_name = from.getString(VARIABLE_NAME_COLUMN_NAME);
+        Float range_min = from.getFloat(RANGE_MIN_COLUMN_NAME);
+        Float range_max = from.getFloat(RANGE_MAX_COLUMN_NAME);
         Extent<Float> colorScaleRange =
                 Extents.newExtent(range_min, range_max);
         return new VariableConfig(

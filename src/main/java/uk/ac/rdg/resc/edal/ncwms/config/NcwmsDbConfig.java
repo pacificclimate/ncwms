@@ -159,7 +159,7 @@ public class NcwmsDbConfig extends NcwmsConfig {
             ResultSetToVariableConfig variableConfigMaker = new ResultSetToVariableConfig();
             ResultSetRunGrouper<DatasetConfig, VariableConfig> grouper =
                 new ResultSetRunGrouper<>(
-                    indexDatabase.getDatasetIdColumnName(),
+                    ResultSetToDatasetConfig.DATASET_ID_COLUMN_NAME,
                     datasetConfigMaker,
                     variableConfigMaker
                 );
