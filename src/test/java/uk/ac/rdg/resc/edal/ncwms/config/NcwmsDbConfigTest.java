@@ -47,7 +47,7 @@ public class NcwmsDbConfigTest {
         String[] codes = {"CRS:187", "EPSG:187"};
         NcwmsSupportedCrsCodes crsCodes = new NcwmsSupportedCrsCodes(codes);
 
-        NcwmsIndexDatabase indexDatabase = new NcwmsIndexDatabase("modelmeta", "result", "", "", "");
+        NcwmsIndexDatabase indexDatabase = new NcwmsIndexDatabase("modelmeta", "", "", "");
 
         config = new NcwmsDbConfig(
                 datasets,
