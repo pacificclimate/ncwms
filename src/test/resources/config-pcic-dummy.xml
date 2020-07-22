@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<config>
+  <contact>
+    <name>Rod Glover</name>
+    <telephone></telephone>
+    <email>rglover@uvic.ca</email>
+    <organization>Pacific Climate Impacts Consortium</organization>
+  </contact>
+  <server>
+    <title>ncWMS2-PCIC: Dummy</title>
+    <allowFeatureInfo>True</allowFeatureInfo>
+    <maxImageWidth>1024</maxImageWidth>
+    <maxImageHeight>1024</maxImageHeight>
+    <allowglobalcapabilities>true</allowglobalcapabilities>
+    <abstract></abstract>
+    <keywords></keywords>
+    <url></url>
+  </server>
+  <cache enabled="true">
+    <elementLifetimeMinutes>1440.0</elementLifetimeMinutes>
+    <inMemorySizeMB>256</inMemorySizeMB>
+  </cache>
+  <dynamicServices/>
+  <crsCodes/>
+  <indexDatabase>
+    <name>ce_meta/hydro_files</name>
+    <url>postgresql://monsoon.pcic.uvic.ca/ce_meta</url>
+    <username>ce_meta_ro</username>
+    <datasetsQuery>
+      SELECT
+      'alpha'::character varying(255) AS dataset_id
+      , '/dummy/alpha.nc'::character varying(2048) AS location
+    </datasetsQuery>
+    <variablesQuery>
+      SELECT
+        'alpha' AS dataset_id
+        , 'foo'::character varying(32) AS variable_id
+        , 'foo_name'::character varying(64) AS variable_name
+        , 0::double precision AS range_min
+        , 100::double precision AS range_max
+    </variablesQuery>
+  </indexDatabase>
+</config>
