@@ -40,7 +40,7 @@ public class NcwmsDbConfig extends NcwmsConfig {
      * Used for JAX-B
      */
     @SuppressWarnings("unused")
-    protected NcwmsDbConfig() {}
+    public NcwmsDbConfig() {}
 
     public NcwmsDbConfig(File configFile) throws IOException, JAXBException {
         super(configFile);
@@ -137,22 +137,36 @@ public class NcwmsDbConfig extends NcwmsConfig {
     public void loadFromIndexDatabase() throws SQLException {
         // Set up a dummy DatasetStorage to handle loaded datasets.
         // Christ only knows what we should actually be doing here.
+        // TODO: Figure this out!!!
         setDatasetLoadedHandler(new DummyDatasetStorage());
 
-        // Establish connection to index database
-        Properties connectionProperties = new Properties();
-        connectionProperties.setProperty("password", System.getenv("INDEX_DATABASE_PASSWORD"));
         NcwmsIndexDatabase indexDatabase = getIndexDatabase();
+        final String dbUrl = indexDatabase.getUrl();
+        if (dbUrl == null || dbUrl.equals("")) {
+            // TODO: Replace with throw?
+            log.warn("Index database URL is null or empty");
+            return;
+        }
+
+        final String password = System.getenv("INDEX_DATABASE_PASSWORD");
+        if (password == null) {
+            // TODO: Replace with throw?
+            log.warn("Environment variable INDEX_DATABASE_PASSWORD should be specified, is not");
+        }
+
         try (
-                Connection connection = DriverManager.getConnection(
-                        "jdbc:" + indexDatabase.getUrl(),
-                        connectionProperties
-                )
+            // Establish connection to index database
+            Connection connection = DriverManager.getConnection(
+                "jdbc:" + dbUrl,
+                indexDatabase.getUsername(),
+                password
+            )
         ) {
             // Issue database queries
-            Statement statement = connection.createStatement();
-            ResultSet datasetRs = statement.executeQuery(indexDatabase.getDatasetsQuery());
-            ResultSet variableRs = statement.executeQuery(indexDatabase.getVariablesQuery());
+            ResultSet datasetRs = connection.createStatement()
+                .executeQuery(indexDatabase.getDatasetsQuery());
+            ResultSet variableRs = connection.createStatement()
+                .executeQuery(indexDatabase.getVariablesQuery());
 
             // Construct configurations from query results
             ResultSetToDatasetConfig datasetConfigMaker = new ResultSetToDatasetConfig();

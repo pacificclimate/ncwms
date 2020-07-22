@@ -14,6 +14,9 @@ public class NcwmsIndexDatabase implements IndexDatabaseInfo {
     @XmlElement(name = "url")
     private String url = "";
 
+    @XmlElement(name = "username")
+    private String username = "";
+
     @XmlElement(name = "datasetsQuery")
     private String datasetsQuery = "";
 
@@ -40,6 +43,9 @@ public class NcwmsIndexDatabase implements IndexDatabaseInfo {
 
     @Override
     public String getUrl() { return url; }
+
+    @Override
+    public String getUsername() { return username; }
 
     @Override
     public String getDatasetsQuery() { return datasetsQuery; }
