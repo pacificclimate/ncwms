@@ -83,7 +83,7 @@ public class NcwmsAdminServlet extends HttpServlet {
     private static final Logger log = LoggerFactory.getLogger(NcwmsAdminServlet.class);
 
     private VelocityEngine velocityEngine;
-    private NcwmsCatalogue catalogue;
+    private NcwmsDbCatalogue catalogue;
 
     public NcwmsAdminServlet() throws IOException, Exception {
         super();
@@ -97,8 +97,8 @@ public class NcwmsAdminServlet extends HttpServlet {
          */
         Object config = servletConfig.getServletContext()
                 .getAttribute(NcwmsApplicationServlet.CONTEXT_NCWMS_CATALOGUE);
-        if (config instanceof NcwmsCatalogue) {
-            catalogue = (NcwmsCatalogue) config;
+        if (config instanceof NcwmsDbCatalogue) {
+            catalogue = (NcwmsDbCatalogue) config;
         } else {
             throw new ServletException("ncWMS configuration object is incorrect type.  The \""
                     + NcwmsApplicationServlet.CONTEXT_NCWMS_CATALOGUE

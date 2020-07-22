@@ -42,7 +42,8 @@ import org.json.JSONObject;
 
 import uk.ac.rdg.resc.edal.catalogue.jaxb.DatasetConfig;
 import uk.ac.rdg.resc.edal.catalogue.jaxb.VariableConfig;
-import uk.ac.rdg.resc.edal.ncwms.config.NcwmsConfig;
+//import uk.ac.rdg.resc.edal.ncwms.config.NcwmsConfig;
+import uk.ac.rdg.resc.edal.ncwms.config.NcwmsDbConfig;
 
 /*
  * An {@link HttpServlet} which provides information about datasets from
@@ -52,7 +53,7 @@ import uk.ac.rdg.resc.edal.ncwms.config.NcwmsConfig;
  */
 public class NcwmsApiServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
-    private NcwmsCatalogue catalogue;
+    private NcwmsDbCatalogue catalogue;
 
     public NcwmsApiServlet() throws IOException, Exception {
         super();
@@ -65,8 +66,8 @@ public class NcwmsApiServlet extends HttpServlet {
          * Get the pre-loaded catalogue
          */
         Object config = servletConfig.getServletContext().getAttribute(NcwmsApplicationServlet.CONTEXT_NCWMS_CATALOGUE);
-        if (config instanceof NcwmsCatalogue) {
-            catalogue = (NcwmsCatalogue) config;
+        if (config instanceof NcwmsDbCatalogue) {
+            catalogue = (NcwmsDbCatalogue) config;
         } else {
             throw new ServletException("ncWMS configuration object is incorrect type.  The \""
                     + NcwmsApplicationServlet.CONTEXT_NCWMS_CATALOGUE
@@ -74,7 +75,7 @@ public class NcwmsApiServlet extends HttpServlet {
         }
     }
 
-    protected void setCatalogue(NcwmsCatalogue catalogue){
+    protected void setCatalogue(NcwmsDbCatalogue catalogue){
        this.catalogue = catalogue;
     }
 
@@ -86,7 +87,7 @@ public class NcwmsApiServlet extends HttpServlet {
          * Parameter NAMES not case sensitive, but parameter VALUES are
          */
         String datasetId = request.getParameter("id");
-        NcwmsConfig ncwmsConfig = catalogue.getConfig();
+        NcwmsDbConfig ncwmsConfig = catalogue.getConfig();
         DatasetConfig dataset = ncwmsConfig.getDatasetInfo(datasetId);
 
         /*

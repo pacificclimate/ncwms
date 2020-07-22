@@ -49,18 +49,14 @@ import org.junit.Test;
 import uk.ac.rdg.resc.edal.catalogue.jaxb.CacheInfo;
 import uk.ac.rdg.resc.edal.catalogue.jaxb.DatasetConfig;
 import uk.ac.rdg.resc.edal.catalogue.jaxb.VariableConfig;
-import uk.ac.rdg.resc.edal.ncwms.config.NcwmsConfig;
-import uk.ac.rdg.resc.edal.ncwms.config.NcwmsContact;
-import uk.ac.rdg.resc.edal.ncwms.config.NcwmsDynamicService;
-import uk.ac.rdg.resc.edal.ncwms.config.NcwmsServerInfo;
-import uk.ac.rdg.resc.edal.ncwms.config.NcwmsSupportedCrsCodes;
+import uk.ac.rdg.resc.edal.ncwms.config.*;
 import uk.ac.rdg.resc.edal.util.Extents;
 
 public class NcwmsApiTest {
 
     private NcwmsApiServlet servlet;
     private DatasetConfig dataset;
-    private NcwmsConfig config;
+    private NcwmsDbConfig config;
 
     @Before
     public void setUp() throws IOException, Exception {
@@ -94,7 +90,19 @@ public class NcwmsApiTest {
         String[] codes = {"CRS:187", "EPSG:187"};
         NcwmsSupportedCrsCodes crsCodes = new NcwmsSupportedCrsCodes(codes);
 
-        config = new NcwmsConfig(datasets, new NcwmsDynamicService[0], contact, serverInfo, cacheInfo, crsCodes);
+        NcwmsIndexDatabase indexDatabase = new NcwmsIndexDatabase(
+            "dummy", null, null, null
+        );
+
+        config = new NcwmsDbConfig(
+            datasets,
+            new NcwmsDynamicService[0],
+            contact,
+            serverInfo,
+            cacheInfo,
+            crsCodes,
+            indexDatabase
+        );
     }
 
     @Test
@@ -116,7 +124,7 @@ public class NcwmsApiTest {
         // Prepare mocked + spied classes
         HttpServletRequest mockedRequest = mock(HttpServletRequest.class);
         HttpServletResponse mockedResponse = mock(HttpServletResponse.class);
-        NcwmsCatalogue mockedNcwmsCatalogue = mock(NcwmsCatalogue.class);
+        NcwmsDbCatalogue mockedNcwmsCatalogue = mock(NcwmsDbCatalogue.class);
 
         // Prepare requests
         JSONObject datasetInfo = new JSONObject();

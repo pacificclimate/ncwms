@@ -52,7 +52,7 @@ public class NcwmsRefreshTest {
 
     private NcwmsRefreshServlet servlet;
     private DatasetConfig dataset;
-    private NcwmsConfig config;
+    private NcwmsDbConfig config;
 
     @Before
     public void setUp() throws IOException, Exception {
@@ -86,14 +86,26 @@ public class NcwmsRefreshTest {
         String[] codes = {"CRS:187", "EPSG:187"};
         NcwmsSupportedCrsCodes crsCodes = new NcwmsSupportedCrsCodes(codes);
 
-        config = new NcwmsConfig(datasets, new NcwmsDynamicService[0], contact, serverInfo, cacheInfo, crsCodes);
+        NcwmsIndexDatabase indexDatabase = new NcwmsIndexDatabase(
+            "dummy", null, null, null
+        );
+
+        config = new NcwmsDbConfig(
+            datasets,
+            new NcwmsDynamicService[0],
+            contact,
+            serverInfo,
+            cacheInfo,
+            crsCodes,
+            indexDatabase
+        );
     }
 
     @Test
     public void test() throws Exception {
         HttpServletRequest mockedRequest = mock(HttpServletRequest.class);
         HttpServletResponse mockedResponse = mock(HttpServletResponse.class);
-        NcwmsCatalogue spyNcwmsCatalogue = spy(NcwmsCatalogue.class);
+        NcwmsDbCatalogue spyNcwmsCatalogue = spy(NcwmsDbCatalogue.class);
 
         when(mockedRequest.getParameter("id")).thenReturn("datasetId");
         when(spyNcwmsCatalogue.getConfig()).thenReturn(config);

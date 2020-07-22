@@ -37,7 +37,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import uk.ac.rdg.resc.edal.catalogue.jaxb.DatasetConfig;
-import uk.ac.rdg.resc.edal.ncwms.config.NcwmsConfig;
+//import uk.ac.rdg.resc.edal.ncwms.config.NcwmsConfig;
+import uk.ac.rdg.resc.edal.ncwms.config.NcwmsDbConfig;
 
 /**
  * An {@link HttpServlet} which requests a dataset to be refreshed via an HTTP
@@ -47,7 +48,7 @@ import uk.ac.rdg.resc.edal.ncwms.config.NcwmsConfig;
  */
 public class NcwmsRefreshServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
-    private NcwmsCatalogue catalogue;
+    private NcwmsDbCatalogue catalogue;
 
     public NcwmsRefreshServlet() throws IOException, Exception {
         super();
@@ -58,8 +59,8 @@ public class NcwmsRefreshServlet extends HttpServlet {
         super.init(servletConfig);
         // Get Catalogue
         Object config = servletConfig.getServletContext().getAttribute(NcwmsApplicationServlet.CONTEXT_NCWMS_CATALOGUE);
-        if (config instanceof NcwmsCatalogue) {
-            catalogue = (NcwmsCatalogue) config;
+        if (config instanceof NcwmsDbCatalogue) {
+            catalogue = (NcwmsDbCatalogue) config;
         } else {
             throw new ServletException("ncWMS configuration object is incorrect type.  The \""
                     + NcwmsApplicationServlet.CONTEXT_NCWMS_CATALOGUE
@@ -67,7 +68,7 @@ public class NcwmsRefreshServlet extends HttpServlet {
         }
     }
 
-    protected void setCatalogue(NcwmsCatalogue catalogue){
+    protected void setCatalogue(NcwmsDbCatalogue catalogue){
        this.catalogue = catalogue;
     }
 
@@ -76,7 +77,7 @@ public class NcwmsRefreshServlet extends HttpServlet {
             throws ServletException, IOException {
 
         String datasetId = request.getParameter("id");
-        NcwmsConfig ncwmsConfig = catalogue.getConfig();
+        NcwmsDbConfig ncwmsConfig = catalogue.getConfig();
         DatasetConfig dataset = ncwmsConfig.getDatasetInfo(datasetId);
         dataset.forceRefresh();
         // Return 202 for accepted

@@ -42,7 +42,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import uk.ac.rdg.resc.edal.ncwms.config.NcwmsConfig;
+//import uk.ac.rdg.resc.edal.ncwms.config.NcwmsConfig;
+import uk.ac.rdg.resc.edal.ncwms.config.NcwmsDbConfig;
 import uk.ac.rdg.resc.edal.util.GISUtils;
 import uk.ac.rdg.resc.edal.wms.RequestParams;
 import uk.ac.rdg.resc.edal.wms.WmsCatalogue;
@@ -58,7 +59,7 @@ public class NcwmsServlet extends WmsServlet implements Servlet {
     private static final long serialVersionUID = 1L;
     private static final Logger log = LoggerFactory.getLogger(NcwmsServlet.class);
 
-    private NcwmsCatalogue ncwmsCatalogue = null;
+    private NcwmsDbCatalogue ncwmsCatalogue = null;
 
     /**
      * @see WmsServlet#WmsServlet()
@@ -70,7 +71,7 @@ public class NcwmsServlet extends WmsServlet implements Servlet {
     @Override
     public void destroy() {
         super.destroy();
-        NcwmsConfig.shutdown();
+        NcwmsDbConfig.shutdown();
         GISUtils.releaseEpsgDatabase();
     }
 
@@ -82,10 +83,10 @@ public class NcwmsServlet extends WmsServlet implements Servlet {
          */
         Object config = servletConfig.getServletContext().getAttribute(
                 NcwmsApplicationServlet.CONTEXT_NCWMS_CATALOGUE);
-        if (config instanceof NcwmsCatalogue) {
-            ncwmsCatalogue = (NcwmsCatalogue) config;
+        if (config instanceof NcwmsDbCatalogue) {
+            ncwmsCatalogue = (NcwmsDbCatalogue) config;
             setCatalogue(ncwmsCatalogue);
-            String[] configDefinedCrsCodes = ((NcwmsCatalogue) config).getSupportedNcwmsCrsCodes().getSupportedCrsCodes();
+            String[] configDefinedCrsCodes = ((NcwmsDbCatalogue) config).getSupportedNcwmsCrsCodes().getSupportedCrsCodes();
             if (configDefinedCrsCodes != null) {
                 super.setCrsCodes(configDefinedCrsCodes);
             }

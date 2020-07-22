@@ -32,6 +32,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.sql.SQLException;
 import java.util.Properties;
 
 import javax.servlet.ServletConfig;
@@ -57,7 +58,8 @@ import uk.ac.rdg.resc.edal.dataset.cdm.CdmGridDatasetFactory;
 import uk.ac.rdg.resc.edal.graphics.formats.ImageFormat;
 import uk.ac.rdg.resc.edal.graphics.utils.ColourPalette;
 import uk.ac.rdg.resc.edal.graphics.utils.SldTemplateStyleCatalogue;
-import uk.ac.rdg.resc.edal.ncwms.config.NcwmsConfig;
+//import uk.ac.rdg.resc.edal.ncwms.config.NcwmsConfig;
+import uk.ac.rdg.resc.edal.ncwms.config.NcwmsDbConfig;
 import uk.ac.rdg.resc.edal.util.GISUtils;
 import uk.ac.rdg.resc.edal.util.GISUtils.EpsgDatabasePath;
 
@@ -77,20 +79,22 @@ public class NcwmsApplicationServlet extends HttpServlet {
     public static final String CONTEXT_PALETTE_DIRS = "paletteDirs";
     public static final String CONTEXT_DEFAULT_PALETTE = "defaultPalette";
     public static final String CONTEXT_STYLE_DIRS = "styleDirs";
-    public static final String CONTEXT_NCWMS_CATALOGUE = "NcwmsCatalogue";
+    public static final String CONTEXT_NCWMS_CATALOGUE = "NcwmsDbCatalogue";
     public static final String CONTEXT_VELOCITY_ENGINE = "VelocityEngine";
 
     private static final long serialVersionUID = 1L;
     private static final Logger log = LoggerFactory.getLogger(NcwmsApplicationServlet.class);
 
     private VelocityEngine velocityEngine;
-    private NcwmsCatalogue catalogue;
+    private NcwmsDbCatalogue catalogue;
 
     @Override
     public void init(ServletConfig servletConfig) throws ServletException {
+        log.debug("TESTING!");
         super.init(servletConfig);
 
-        NcwmsConfig config;
+//        NcwmsConfig config;
+        NcwmsDbConfig config;
         /*
          * Set the default dataset factory - will be used when a dataset factory
          * name is not specified
@@ -261,15 +265,16 @@ public class NcwmsApplicationServlet extends HttpServlet {
         File configFile = new File(configDir + File.separator, "config.xml");
         try {
             if (configFile.exists()) {
-                config = NcwmsConfig.readFromFile(configFile);
+                config = NcwmsDbConfig.readFromFile(configFile);
+                config.loadFromIndexDatabase();
             } else {
-                config = new NcwmsConfig(configFile);
+                config = new NcwmsDbConfig(configFile);
             }
 
         } catch (JAXBException e) {
             log.error("Config file is invalid - creating new one", e);
             try {
-                config = new NcwmsConfig(configFile);
+                config = new NcwmsDbConfig(configFile);
             } catch (Exception e1) {
                 throw new ServletException(
                         "Old config is invalid, and a new one cannot be created", e1);
@@ -284,7 +289,7 @@ public class NcwmsApplicationServlet extends HttpServlet {
                     "Cannot find config file - has it been deleted during startup?  Creating new one",
                     e);
             try {
-                config = new NcwmsConfig(configFile);
+                config = new NcwmsDbConfig(configFile);
             } catch (Exception e1) {
                 throw new ServletException(
                         "Old config is missing, and a new one cannot be created", e1);
@@ -292,9 +297,12 @@ public class NcwmsApplicationServlet extends HttpServlet {
         } catch (IOException e) {
             log.error("Problem writing new config file", e);
             throw new ServletException("Cannot create a new config file", e);
+        } catch (SQLException e) {
+            log.error("Problem processing index database", e);
+            throw new ServletException("Cannot process index database", e);
         }
         try {
-            catalogue = new NcwmsCatalogue(config);
+            catalogue = new NcwmsDbCatalogue(config);
         } catch (IOException e) {
             log.error("Problem loading datasets", e);
         }
