@@ -23,7 +23,7 @@
   <dynamicServices/>
   <crsCodes/>
   <indexDatabase>
-    <name>ce_meta/hydro_files</name>
+    <name>ce_meta/dummy</name>
     <url>postgresql://monsoon.pcic.uvic.ca/ce_meta</url>
     <username>ce_meta_ro</username>
     <datasetsQuery>
