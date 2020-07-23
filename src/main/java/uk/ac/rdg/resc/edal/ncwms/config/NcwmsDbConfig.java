@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.Properties;
 
 /**
@@ -135,6 +136,25 @@ public class NcwmsDbConfig extends NcwmsConfig {
      *
      */
     public void loadFromIndexDatabase() throws SQLException {
+        // This is one way to ensure that the needed driver(s) (in this case,
+        // postgresql) are available in the runtime. There are likely better
+        // ways to do this, but I haven't the patience at the moment.
+        // TODO: Do this better.
+        try {
+            Class.forName("org.postgresql.Driver");
+            log.debug("org.postgresql.Driver found");
+        } catch (ClassNotFoundException e) {
+            log.error("No jdbc postgresql driver");
+            return;
+        }
+
+        log.debug("Drivers available");
+        final Enumeration<Driver> drivers = DriverManager.getDrivers();
+        while (drivers.hasMoreElements()) {
+            final Driver driver = drivers.nextElement();
+            log.debug(String.format("- %s", driver.getClass().getName()));
+        }
+
         // Set up a dummy DatasetStorage to handle loaded datasets.
         // Christ only knows what we should actually be doing here.
         // TODO: Figure this out!!!
