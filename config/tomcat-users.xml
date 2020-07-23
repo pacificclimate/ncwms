@@ -13,7 +13,7 @@
   <role rolename="ncWMS-admin"/>
 
   <user username="ncwms"
-        password="823f3f8e9a2727375993229e4a71593618441c07"
+        password="ncwms"
         roles="ncWMS-admin"/>
 
   <user username="admin"
