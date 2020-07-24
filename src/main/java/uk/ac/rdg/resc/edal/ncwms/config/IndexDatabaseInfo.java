@@ -6,4 +6,5 @@ public interface IndexDatabaseInfo {
     String getUsername();
     String getDatasetsQuery();
     String getVariablesQuery();
+    String getIdToLocationQuery();
 }

@@ -23,17 +23,21 @@ public class NcwmsIndexDatabase implements IndexDatabaseInfo {
     @XmlElement(name = "variablesQuery")
     private String variablesQuery = "";
 
+    @XmlElement(name = "idToLocationQuery")
+    private String idToLocationQuery = "";
+
     NcwmsIndexDatabase() {
     }
 
     public NcwmsIndexDatabase(
-            String name, String url, String datasetsQuery, String variablesQuery
+            String name, String url, String datasetsQuery, String variablesQuery, String idToLocationQuery
     ) {
         super();
         this.name = name;
         this.url = url;
         this.datasetsQuery = datasetsQuery;
         this.variablesQuery = variablesQuery;
+        this.idToLocationQuery = idToLocationQuery;
     }
 
     @Override
@@ -52,6 +56,9 @@ public class NcwmsIndexDatabase implements IndexDatabaseInfo {
 
     @Override
     public String getVariablesQuery() { return variablesQuery; }
+
+    @Override
+    public String getIdToLocationQuery() { return idToLocationQuery; }
 
     @Override
     public String toString() {
