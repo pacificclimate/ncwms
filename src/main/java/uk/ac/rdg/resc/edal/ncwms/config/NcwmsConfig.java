@@ -59,7 +59,7 @@ import uk.ac.rdg.resc.edal.catalogue.jaxb.DatasetConfig;
  * 
  * @author Guy Griffiths
  */
-@XmlType(propOrder = { "dynamicServices", "dynamicCache", "contact", "serverInfo", "crsCodes" })
+@XmlType(propOrder = { "dynamicServices", "databaseDynamicServices", "dynamicCache", "contact", "serverInfo", "crsCodes" })
 @XmlRootElement(name = "config")
 public class NcwmsConfig extends CatalogueConfig {
     private static final Logger log = LoggerFactory.getLogger(NcwmsConfig.class);
@@ -67,12 +67,18 @@ public class NcwmsConfig extends CatalogueConfig {
     /* Included in XML - see setDynamicServices for details */
     private Map<String, NcwmsDynamicService> dynamicServices = new LinkedHashMap<String, NcwmsDynamicService>();
     
+    @XmlElement(name = "databaseDynamicServices")
+    private NcwmsDatabaseDynamicServicesConfig databaseDynamicServices = new NcwmsDatabaseDynamicServicesConfig();
+
     @XmlElement(name = "dynamicCache")
     private NcwmsDynamicCacheInfo dynamicCache = new NcwmsDynamicCacheInfo();
+
     @XmlElement(name = "contact")
     private NcwmsContact contact = new NcwmsContact();
+
     @XmlElement(name = "server")
     private NcwmsServerInfo serverInfo = new NcwmsServerInfo();
+
     @XmlElement(name = "crsCodes")
     private NcwmsSupportedCrsCodes crsCodes = new NcwmsSupportedCrsCodes();
 
@@ -80,7 +86,7 @@ public class NcwmsConfig extends CatalogueConfig {
      * Used for JAX-B
      */
     @SuppressWarnings("unused")
-    protected NcwmsConfig() {
+    public NcwmsConfig() {
     }
 
     public NcwmsConfig(File configFile) throws IOException, JAXBException {
@@ -88,10 +94,18 @@ public class NcwmsConfig extends CatalogueConfig {
         dynamicServices = new LinkedHashMap<String, NcwmsDynamicService>();
     }
 
-    public NcwmsConfig(DatasetConfig[] datasets, NcwmsDynamicService[] dynamicServices,
-            NcwmsContact contact, NcwmsServerInfo serverInfo, CacheInfo cacheInfo, NcwmsSupportedCrsCodes crsCodes) {
+    public NcwmsConfig(
+        DatasetConfig[] datasets,
+        NcwmsDynamicService[] dynamicServices,
+        NcwmsDatabaseDynamicServicesConfig databaseDynamicServices,
+        NcwmsContact contact,
+        NcwmsServerInfo serverInfo,
+        CacheInfo cacheInfo,
+        NcwmsSupportedCrsCodes crsCodes
+    ) {
         super(datasets, cacheInfo);
         setDynamicServices(dynamicServices);
+        this.databaseDynamicServices = databaseDynamicServices;
         this.contact = contact;
         this.serverInfo = serverInfo;
         this.crsCodes = crsCodes;
@@ -152,6 +166,10 @@ public class NcwmsConfig extends CatalogueConfig {
         return dynamicCache;
     }
 
+    public NcwmsDatabaseDynamicServicesConfig getDatabaseDynamicServices() {
+        return databaseDynamicServices;
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder(super.toString());
@@ -186,8 +204,15 @@ public class NcwmsConfig extends CatalogueConfig {
              */
             log.warn("No config file exists in the given location (" + configFile.getAbsolutePath()
                     + ").  Creating one with defaults");
-            config = new NcwmsConfig(new DatasetConfig[0], new NcwmsDynamicService[0],
-                    new NcwmsContact(), new NcwmsServerInfo(), new CacheInfo(), new NcwmsSupportedCrsCodes());
+            config = new NcwmsConfig(
+                new DatasetConfig[0],
+                new NcwmsDynamicService[0],
+                new NcwmsDatabaseDynamicServicesConfig(),
+                new NcwmsContact(),
+                new NcwmsServerInfo(),
+                new CacheInfo(),
+                new NcwmsSupportedCrsCodes()
+            );
             config.configFile = configFile;
             config.save();
         } else {

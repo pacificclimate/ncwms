@@ -79,7 +79,15 @@ public class NcwmsConfigTest {
         String[] codes = {"CRS:187", "EPSG:187"};
         NcwmsSupportedCrsCodes crsCodes = new NcwmsSupportedCrsCodes(codes);
 
-        config = new NcwmsConfig(datasets, new NcwmsDynamicService[0], contact, serverInfo, cacheInfo, crsCodes);
+        config = new NcwmsConfig(
+            datasets,
+            new NcwmsDynamicService[0],
+            new NcwmsDatabaseDynamicServicesConfig(),
+            contact,
+            serverInfo,
+            cacheInfo,
+            crsCodes
+        );
     }
 
     @Test

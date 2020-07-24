@@ -24,4 +24,31 @@
         <datasetsQuery>SELECT datasets</datasetsQuery>
         <variablesQuery>SELECT variables</variablesQuery>
     </indexDatabase>
+    <crsCodes>
+        <code>EPSG:9999</code>
+    </crsCodes>
+    <dynamicServices>
+        <dynamicService
+            alias="alpha"
+            servicePath="/path/to/alpha"
+            datasetIdMatch=".*"
+            dataReaderClass=""
+            copyrightStatement=""
+            moreInfoUrl=""
+            disabled="false"
+            queryable="true"
+            downloadable="false"
+        />
+    </dynamicServices>
+    <databaseDynamicServices>
+        <indexDatabase>
+            <name>for database dynamic services</name>
+            <url>postgresql://yowza</url>
+            <username>gollum</username>
+            <idToLocationQuery>SELECT location</idToLocationQuery>
+        </indexDatabase>
+        <dynamicService alias="alpha" servicePath="/path/to/alpha"/>
+        <dynamicService alias="beta" servicePath="/path/to/beta"/>
+        <dynamicService alias="gamma" servicePath="/path/to/gamma"/>
+    </databaseDynamicServices>
 </config>
