@@ -7,7 +7,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-public class NcwmsIndexDatabase implements IndexDatabaseInfo {
+public class NcwmsIndexDatabaseConfig implements IndexDatabaseInfo {
     @XmlElement(name = "name")
     private String name = "";
 
@@ -26,10 +26,10 @@ public class NcwmsIndexDatabase implements IndexDatabaseInfo {
     @XmlElement(name = "idToLocationQuery")
     private String idToLocationQuery = "";
 
-    NcwmsIndexDatabase() {
+    NcwmsIndexDatabaseConfig() {
     }
 
-    public NcwmsIndexDatabase(
+    public NcwmsIndexDatabaseConfig(
             String name, String url, String datasetsQuery, String variablesQuery, String idToLocationQuery
     ) {
         super();

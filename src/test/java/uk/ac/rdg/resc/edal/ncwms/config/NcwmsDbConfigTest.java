@@ -13,7 +13,6 @@ import uk.ac.rdg.resc.edal.util.Extents;
 import javax.xml.bind.JAXBException;
 import java.io.*;
 import java.net.URL;
-import java.sql.SQLException;
 import java.util.Arrays;
 
 public class NcwmsDbConfigTest {
@@ -47,7 +46,7 @@ public class NcwmsDbConfigTest {
         String[] codes = {"CRS:187", "EPSG:187"};
         NcwmsSupportedCrsCodes crsCodes = new NcwmsSupportedCrsCodes(codes);
 
-        NcwmsIndexDatabase indexDatabase = new NcwmsIndexDatabase("modelmeta", "", "", "");
+        NcwmsIndexDatabaseConfig indexDatabase = new NcwmsIndexDatabaseConfig("modelmeta", "", "", "", "");
 
         config = new NcwmsDbConfig(
                 datasets,
@@ -71,7 +70,7 @@ public class NcwmsDbConfigTest {
 
     @Test
     public void testDatabaseInfo() {
-        NcwmsIndexDatabase indexDatabase = config.getIndexDatabase();
+        NcwmsIndexDatabaseConfig indexDatabase = config.getIndexDatabase();
         String name = indexDatabase.getName();
         assertEquals(name, "modelmeta");
     }

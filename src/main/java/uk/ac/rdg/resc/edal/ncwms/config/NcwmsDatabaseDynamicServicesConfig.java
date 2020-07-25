@@ -13,7 +13,7 @@ public class NcwmsDatabaseDynamicServicesConfig implements NcwmsDatabaseDynamicS
     private static final Logger log = LoggerFactory.getLogger(NcwmsDatabaseDynamicServicesConfig.class);
 
     @XmlElement(name = "indexDatabase")
-    private NcwmsIndexDatabase indexDatabase = new NcwmsIndexDatabase();
+    private NcwmsIndexDatabaseConfig indexDatabase = new NcwmsIndexDatabaseConfig();
 
     // dsInternal stores the dynamic services as a HashMap of NcwmsDynamicService.
     // Interfaces deal only in arrays of NcwmsDynamicService, but we store internally
@@ -33,7 +33,7 @@ public class NcwmsDatabaseDynamicServicesConfig implements NcwmsDatabaseDynamicS
     }
 
     public NcwmsDatabaseDynamicServicesConfig(
-        NcwmsIndexDatabase indexDatabase, NcwmsDynamicService[] dynamicServices
+        NcwmsIndexDatabaseConfig indexDatabase, NcwmsDynamicService[] dynamicServices
     ) {
         super();
         this.indexDatabase = indexDatabase;
@@ -41,7 +41,7 @@ public class NcwmsDatabaseDynamicServicesConfig implements NcwmsDatabaseDynamicS
     }
 
     @Override
-    public NcwmsIndexDatabase getIndexDatabase() {
+    public NcwmsIndexDatabaseConfig getIndexDatabase() {
         return indexDatabase;
     }
 

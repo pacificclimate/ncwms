@@ -21,7 +21,6 @@ import java.io.Reader;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.Properties;
 
 /**
  * Deals purely with the (de)serialisation of the ncWMS config file. This
@@ -35,7 +34,7 @@ public class NcwmsDbConfig extends NcwmsConfig {
     private static final Logger log = LoggerFactory.getLogger(NcwmsDbConfig.class);
 
     @XmlElement(name="indexDatabase")
-    private NcwmsIndexDatabase indexDatabase = new NcwmsIndexDatabase();
+    private NcwmsIndexDatabaseConfig indexDatabase = new NcwmsIndexDatabaseConfig();
 
     /*
      * Used for JAX-B
@@ -54,13 +53,13 @@ public class NcwmsDbConfig extends NcwmsConfig {
         NcwmsServerInfo serverInfo,
         CacheInfo cacheInfo,
         NcwmsSupportedCrsCodes crsCodes,
-        NcwmsIndexDatabase indexDatabase
+        NcwmsIndexDatabaseConfig indexDatabase
     ) {
-        super(datasets, dynamicServices, contact, serverInfo, cacheInfo, crsCodes);
+        super(datasets, dynamicServices, new NcwmsDatabaseDynamicServicesConfig(), contact, serverInfo, cacheInfo, crsCodes);
         this.indexDatabase = indexDatabase;
     }
 
-    public NcwmsIndexDatabase getIndexDatabase() { return indexDatabase; }
+    public NcwmsIndexDatabaseConfig getIndexDatabase() { return indexDatabase; }
 
     @Override
     public String toString() {
@@ -97,7 +96,7 @@ public class NcwmsDbConfig extends NcwmsConfig {
                     new NcwmsServerInfo(),
                     new CacheInfo(),
                     new NcwmsSupportedCrsCodes(),
-                    new NcwmsIndexDatabase()
+                    new NcwmsIndexDatabaseConfig()
             );
             config.configFile = configFile;
             config.save();
@@ -160,7 +159,7 @@ public class NcwmsDbConfig extends NcwmsConfig {
         // TODO: Figure this out!!!
         setDatasetLoadedHandler(new DummyDatasetStorage());
 
-        NcwmsIndexDatabase indexDatabase = getIndexDatabase();
+        NcwmsIndexDatabaseConfig indexDatabase = getIndexDatabase();
         final String dbUrl = indexDatabase.getUrl();
         if (dbUrl == null || dbUrl.equals("")) {
             // TODO: Replace with throw?

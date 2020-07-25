@@ -58,7 +58,7 @@ public class NcwmsConfigTest2 {
     public void testDatabaseDynamicServices() {
         final NcwmsDatabaseDynamicServicesConfig databaseDynamicServices = config.getDatabaseDynamicServices();
 
-        final NcwmsIndexDatabase indexDatabase = databaseDynamicServices.getIndexDatabase();
+        final NcwmsIndexDatabaseConfig indexDatabase = databaseDynamicServices.getIndexDatabase();
         assertEquals("for database dynamic services", indexDatabase.getName());
         assertEquals("postgresql://yowza", indexDatabase.getUrl());
         assertEquals("gollum", indexDatabase.getUsername());
