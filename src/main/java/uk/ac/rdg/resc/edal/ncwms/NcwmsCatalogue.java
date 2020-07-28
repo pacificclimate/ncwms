@@ -59,6 +59,8 @@ import uk.ac.rdg.resc.edal.wms.WmsCatalogue;
 import uk.ac.rdg.resc.edal.wms.util.ContactInfo;
 import uk.ac.rdg.resc.edal.wms.util.ServerInfo;
 
+import static uk.ac.rdg.resc.edal.ncwms.util.FileLocation.pathJoinStrict;
+
 /**
  * An extension of {@link DataCatalogue} to add WMS-specific capabilities for
  * ncWMS.
@@ -74,6 +76,8 @@ public class NcwmsCatalogue extends DataCatalogue implements WmsCatalogue {
     private static final CacheConfiguration.TransactionalMode TRANSACTIONAL_MODE = CacheConfiguration.TransactionalMode.OFF;
     private Cache dynamicDatasetCache;
     private boolean dynamicCacheEnabled = true;
+
+    private NcwmsIndexDatabase ncwmsIndexDatabase = null;
 
     public NcwmsCatalogue() {
         super();
@@ -183,17 +187,25 @@ public class NcwmsCatalogue extends DataCatalogue implements WmsCatalogue {
              * We may have a dynamic dataset. First check the dynamic dataset
              * cache.
              */
-            Element element = dynamicDatasetCache.get(datasetId);
+            final Element element = dynamicDatasetCache.get(datasetId);
             if (element != null && element.getObjectValue() != null) {
                 return (Dataset) element.getObjectValue();
             }
 
             /*
              * Check to see if we have a dynamic service defined which this
-             * dataset ID can map to
+             * dataset ID can map to. The dynamic service may be normal or database
+             * mediated.
              */
-            NcwmsDynamicService dynamicService = getDynamicServiceFromLayerName(datasetId);
-            if (dynamicService == null || dynamicService.isDisabled()) {
+            final NcwmsDynamicServiceAndType dynamicServiceWithType = getDynamicServiceAndTypeFromLayerName(datasetId);
+            final NcwmsDynamicService dynamicService = dynamicServiceWithType.service;
+            final NcwmsDynamicServiceType dynamicServiceType = dynamicServiceWithType.type;
+
+            // Bail out if no enabled dynamic service is available.
+            if (dynamicServiceType == NcwmsDynamicServiceType.NONE ||
+                dynamicService == null ||
+                dynamicService.isDisabled()
+            ) {
                 return null;
             }
 
@@ -203,10 +215,12 @@ public class NcwmsCatalogue extends DataCatalogue implements WmsCatalogue {
                  */
                 return null;
             }
+
             /*
-             * We do the +1 so that the datasetPath doesn't start with a /
+             * Strip off the prefix "<alias>" from the dataset id.
+             * Note: method joinPathStrict handles cases with and without leading /
              */
-            String datasetPath = datasetId.substring(dynamicService.getAlias().length() + 1);
+            final String datasetPath = datasetId.substring(dynamicService.getAlias().length());
 
             /*
              * Check if we allow this path or if it is disallowed by the dynamic
@@ -216,11 +230,20 @@ public class NcwmsCatalogue extends DataCatalogue implements WmsCatalogue {
                 return null;
             }
 
-            String datasetUrl = dynamicService.getServicePath() + "/" + datasetPath;
+            // Map the datasetPath to its corresponding URL.
 
-            String title = datasetId;
-            while (title.startsWith("/") && title.length() > 0)
-                title = title.substring(1);
+            final String datasetLocation;
+            try {
+                assert dynamicServiceType != NcwmsDynamicServiceType.NONE;
+                datasetLocation = dynamicServiceType == NcwmsDynamicServiceType.SIMPLE ?
+                    datasetPath :
+                    getNcwmsIndexDatabase().getLocationFromId(datasetPath);
+            } catch (Exception e) {
+                // TODO: Fix this horrible exception handing: way too generic, etc.
+                return null;
+            }
+
+            final String datasetUrl = pathJoinStrict("/", dynamicService.getServicePath(), datasetLocation);
 
             try {
                 DatasetFactory datasetFactory = DatasetFactory
@@ -243,6 +266,15 @@ public class NcwmsCatalogue extends DataCatalogue implements WmsCatalogue {
         }
     }
 
+    private NcwmsIndexDatabase getNcwmsIndexDatabase() {
+        if (ncwmsIndexDatabase == null) {
+            ncwmsIndexDatabase = new NcwmsIndexDatabase(
+                ((NcwmsConfig) config).getDatabaseDynamicServices().getIndexDatabase()
+            );
+        }
+        return ncwmsIndexDatabase;
+    }
+
     @Override
     public EnhancedVariableMetadata getLayerMetadata(final VariableMetadata variableMetadata)
             throws EdalLayerNotFoundException {
@@ -256,13 +288,14 @@ public class NcwmsCatalogue extends DataCatalogue implements WmsCatalogue {
             final String layerName = getLayerNameMapper()
                     .getLayerName(variableMetadata.getDataset().getId(), variableMetadata.getId());
 
-            final NcwmsDynamicService dynamicService = getDynamicServiceFromLayerName(layerName);
-            if (dynamicService == null) {
+            final NcwmsDynamicServiceAndType dynamicServiceWithType = getDynamicServiceAndTypeFromLayerName(layerName);
+            if (dynamicServiceWithType.type == NcwmsDynamicServiceType.NONE) {
                 throw new EdalLayerNotFoundException("The layer: " + layerName + " doesn't exist");
             }
             /*
              * We have a dynamic dataset. Return sensible defaults
              */
+            final NcwmsDynamicService dynamicService = dynamicServiceWithType.service;
             EnhancedVariableMetadata metadata = new EnhancedVariableMetadata() {
                 @Override
                 public String getId() {
@@ -314,18 +347,45 @@ public class NcwmsCatalogue extends DataCatalogue implements WmsCatalogue {
         }
     }
 
-    private NcwmsDynamicService getDynamicServiceFromLayerName(String layerName) {
-        NcwmsDynamicService dynamicService = null;
-        for (NcwmsDynamicService testDynamicService : ((NcwmsConfig) config).getDynamicServices()) {
-            if (layerName.startsWith(testDynamicService.getAlias())) {
-                dynamicService = testDynamicService;
+    // TODO: This should probably be folded into NcwmsDynamicService
+    private enum NcwmsDynamicServiceType { NONE, SIMPLE, DATABASE }
+
+    /**
+     * An
+     */
+    private class NcwmsDynamicServiceAndType {
+        public NcwmsDynamicServiceType type;
+        public NcwmsDynamicService service;
+
+        public NcwmsDynamicServiceAndType(NcwmsDynamicServiceType type, NcwmsDynamicService service) {
+            this.type = type;
+            this.service = service;
+        }
+    }
+
+    private NcwmsDynamicServiceAndType getDynamicServiceAndTypeFromLayerName(String layerName) {
+        final NcwmsConfig config = (NcwmsConfig) this.config;
+
+        // A simple dynamic service?
+        for (NcwmsDynamicService dynamicService : config.getDynamicServices()) {
+            if (layerName.startsWith(dynamicService.getAlias()) &&
+                dynamicService.getIdMatchPattern().matcher(layerName).matches()
+            ) {
+                return new NcwmsDynamicServiceAndType(NcwmsDynamicServiceType.SIMPLE, dynamicService);
             }
         }
-        if (dynamicService == null
-                || !dynamicService.getIdMatchPattern().matcher(layerName).matches()) {
-            return null;
+
+        // A database dynamic service?
+        for (NcwmsDynamicService dynamicService : config.getDatabaseDynamicServices().getDynamicServices()) {
+            if (layerName.startsWith(dynamicService.getAlias()) &&
+                dynamicService.getIdMatchPattern().matcher(layerName).matches()
+            ) {
+                return new NcwmsDynamicServiceAndType(NcwmsDynamicServiceType.DATABASE, dynamicService);
+            }
         }
-        return dynamicService;
+
+        // Nup. Nope. Nada.
+        return new NcwmsDynamicServiceAndType(NcwmsDynamicServiceType.NONE, null);
     }
 
     @Override
@@ -343,12 +403,13 @@ public class NcwmsCatalogue extends DataCatalogue implements WmsCatalogue {
         DatasetConfig datasetInfo = config.getDatasetInfo(datasetId);
         if (datasetInfo != null) {
             return datasetInfo.getTitle();
-        } else if (getDynamicServiceFromLayerName(datasetId) != null) {
-            return "Dynamic service from " + datasetId;
-        } else {
-            throw new EdalLayerNotFoundException(
-                    datasetId + " does not refer to an existing dataset");
         }
+        if (getDynamicServiceAndTypeFromLayerName(datasetId).type !=
+            NcwmsDynamicServiceType.NONE) {
+            return "Dynamic service from " + datasetId;
+        }
+        throw new EdalLayerNotFoundException(
+            datasetId + " does not refer to an existing dataset");
     }
 
     @Override
@@ -356,15 +417,14 @@ public class NcwmsCatalogue extends DataCatalogue implements WmsCatalogue {
         VariableConfig xmlVariable = getXmlVariable(layerName);
         if (xmlVariable != null) {
             return xmlVariable.isDownloadable();
-        } else {
-            /*
-             * We may be dealing with a dynamic dataset
-             */
-            NcwmsDynamicService dynamicService = getDynamicServiceFromLayerName(layerName);
-            if (dynamicService != null) {
-                return dynamicService.isDownloadable();
-            }
         }
+
+        // We may be dealing with a dynamic dataset
+        final NcwmsDynamicServiceAndType dynamicServiceWithType = getDynamicServiceAndTypeFromLayerName(layerName);
+        if (dynamicServiceWithType.type != NcwmsDynamicServiceType.NONE) {
+            return dynamicServiceWithType.service.isDownloadable();
+        }
+
         return false;
     }
 
@@ -373,15 +433,14 @@ public class NcwmsCatalogue extends DataCatalogue implements WmsCatalogue {
         VariableConfig xmlVariable = getXmlVariable(layerName);
         if (xmlVariable != null) {
             return xmlVariable.isQueryable();
-        } else {
-            /*
-             * We may be dealing with a dynamic dataset
-             */
-            NcwmsDynamicService dynamicService = getDynamicServiceFromLayerName(layerName);
-            if (dynamicService != null) {
-                return dynamicService.isQueryable();
-            }
         }
+
+        // We may be dealing with a dynamic dataset
+        final NcwmsDynamicServiceAndType dynamicServiceWithType = getDynamicServiceAndTypeFromLayerName(layerName);
+        if (dynamicServiceWithType.type != NcwmsDynamicServiceType.NONE) {
+            return dynamicServiceWithType.service.isQueryable();
+        }
+
         return false;
     }
 
@@ -390,25 +449,23 @@ public class NcwmsCatalogue extends DataCatalogue implements WmsCatalogue {
         VariableConfig xmlVariable = getXmlVariable(layerName);
         if (xmlVariable != null) {
             return xmlVariable.isDisabled();
-        } else {
-            /*
-             * We may be dealing with a dynamic dataset
-             */
-            NcwmsDynamicService dynamicService = getDynamicServiceFromLayerName(layerName);
-            if (dynamicService != null) {
-                return dynamicService.isDisabled();
-            } else {
-                return true;
-            }
         }
+
+        // We may be dealing with a dynamic dataset
+        final NcwmsDynamicServiceAndType dynamicServiceWithType = getDynamicServiceAndTypeFromLayerName(layerName);
+        if (dynamicServiceWithType.type != NcwmsDynamicServiceType.NONE) {
+            return dynamicServiceWithType.service.isDisabled();
+        }
+
+        return true;
     }
 
     private VariableConfig getXmlVariable(String layerName) {
         DatasetConfig datasetInfo = config
                 .getDatasetInfo(getLayerNameMapper().getDatasetIdFromLayerName(layerName));
         if (datasetInfo != null) {
-            return datasetInfo
-                    .getVariableById(getLayerNameMapper().getVariableIdFromLayerName(layerName));
+            return datasetInfo.getVariableById(
+                getLayerNameMapper().getVariableIdFromLayerName(layerName));
         } else {
             return null;
         }
