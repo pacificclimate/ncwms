@@ -90,8 +90,8 @@ public class NcwmsApiTest {
         String[] codes = {"CRS:187", "EPSG:187"};
         NcwmsSupportedCrsCodes crsCodes = new NcwmsSupportedCrsCodes(codes);
 
-        NcwmsIndexDatabase indexDatabase = new NcwmsIndexDatabase(
-            "dummy", null, null, null
+        NcwmsIndexDatabaseConfig indexDatabase = new NcwmsIndexDatabaseConfig(
+            "dummy", null, null, null, null
         );
 
         config = new NcwmsDbConfig(
