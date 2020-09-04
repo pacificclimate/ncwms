@@ -222,6 +222,7 @@ public class NcwmsCatalogue extends DataCatalogue implements WmsCatalogue {
             while (title.startsWith("/") && title.length() > 0)
                 title = title.substring(1);
 
+            // Dynamic dataset creation. Uses DatasetFactory#createDataset
             try {
                 DatasetFactory datasetFactory = DatasetFactory
                         .forName(dynamicService.getDataReaderClass());
